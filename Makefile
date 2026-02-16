@@ -42,7 +42,7 @@ test:
 # --- Install Target ---
 install:
 	@echo "🚀 Starting build for: $(UUID)"
-	npm run compile
+	npm run build
 	@rm -rf $(DEST)
 	@mkdir -p $(DEST)
 	@cp -r dist/*.js dist/sensors $(DEST)/ 2>/dev/null || cp -r dist/* $(DEST)/

@@ -5,6 +5,12 @@
     <value nick="vertical" value="1"/>
   </enum>
 
+  <enum id="org.gnome.shell.extensions.vitalswidget.TempUnit">
+    <value nick="percentage" value="0"/>
+    <value nick="celcius" value="1"/>
+    <value nick="fahrenheit" value="2"/>
+  </enum>
+
   <schema id="org.gnome.shell.extensions.vitalswidget" path="/org/gnome/shell/extensions/vitalswidget/">
     <key name="position-x" type="d"><default>5</default></key>
     <key name="position-y" type="d"><default>88</default></key>
@@ -49,6 +55,11 @@
     <key name="storage-update-interval" type="i"><default>60000</default></key>
     <key name="temp-update-interval" type="i"><default>5000</default></key>
     <key name="gpu-update-interval" type="i"><default>2000</default></key>
+    
+    <key name="show-rings" type="b"><default>true</default><summary>Show circular progress indicators</summary></key>
+    <key name="temp-unit" enum="org.gnome.shell.extensions.vitalswidget.TempUnit"><default>'celcius'</default></key>
+
+    <key name="enable-popups" type="b"> <default>true</default></key>
 
     <key name="ring-diameter" type="i"><default>64</default></key>
     <key name="ring-width" type="i"><default>4</default></key>

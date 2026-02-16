@@ -1,15 +1,15 @@
-import St from "gi://St";
-import GObject from "gi://GObject";
-import GLib from "gi://GLib";
-import * as Main from "resource:///org/gnome/shell/ui/main.js";
-import { Extension } from "resource:///org/gnome/shell/extensions/extension.js";
-import { VitalItem } from "./vitals.js";
-import { VitalType } from "./config.js";
-import { CPUSensor } from "./sensors/cpu.js";
-import { RAMSensor } from "./sensors/ram.js";
-import { StorageSensor } from "./sensors/storage.js";
-import { TempSensor } from "./sensors/temp.js";
-import { GPUSensor } from "./sensors/gpu.js";
+import St from 'gi://St';
+import GObject from 'gi://GObject';
+import GLib from 'gi://GLib';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
+import { VitalItem } from './vitals.js';
+import { VitalType } from './config.js';
+import { CPUSensor } from './sensors/cpu.js';
+import { RAMSensor } from './sensors/ram.js';
+import { StorageSensor } from './sensors/storage.js';
+import { TempSensor } from './sensors/temp.js';
+import { GPUSensor } from './sensors/gpu.js';
 
 type VitalItemInstance = InstanceType<typeof VitalItem>;
 
@@ -23,7 +23,7 @@ const VitalsWidget = GObject.registerClass(
 
     constructor(settings: any) {
       super({
-        style_class: "vitals-widget-container",
+        style_class: 'vitals-widget-container',
         reactive: true,
         can_focus: true,
       });
@@ -51,7 +51,12 @@ const VitalsWidget = GObject.registerClass(
       this._sensors.set(VitalType.GPU, new GPUSensor());
 
       Object.values(VitalType).forEach((type) => {
-        const vital = new VitalItem(type, this._settings) as VitalItemInstance;
+        const sensor = this._sensors.get(type); // Get the specific sensor
+        const vital = new VitalItem(
+          type,
+          this._settings,
+          sensor,
+        ) as VitalItemInstance;
         this._vitals.set(type, vital);
         this.add_child(vital);
       });
@@ -62,24 +67,24 @@ const VitalsWidget = GObject.registerClass(
     private _connectSettings(): void {
       // Track every handler ID to disconnect them in destroy()
       this._handlerIds.push(
-        this._settings.connect("changed::position-x", () =>
-          this._updatePosition()
-        )
+        this._settings.connect('changed::position-x', () =>
+          this._updatePosition(),
+        ),
       );
       this._handlerIds.push(
-        this._settings.connect("changed::position-y", () =>
-          this._updatePosition()
-        )
+        this._settings.connect('changed::position-y', () =>
+          this._updatePosition(),
+        ),
       );
 
       const styleKeys = [
-        "background-color",
-        "border-color",
-        "border-radius",
-        "vital-spacing",
-        "padding-horizontal",
-        "padding-vertical",
-        "orientation",
+        'background-color',
+        'border-color',
+        'border-radius',
+        'vital-spacing',
+        'padding-horizontal',
+        'padding-vertical',
+        'orientation',
       ];
       styleKeys.forEach((key) => {
         this._handlerIds.push(
@@ -87,32 +92,32 @@ const VitalsWidget = GObject.registerClass(
             if (this._vitals.size === 0) return;
             this._updateContainerStyle();
             this.vertical =
-              this._settings.get_string("orientation") === "vertical";
-          })
+              this._settings.get_string('orientation') === 'vertical';
+          }),
         );
       });
 
       Object.values(VitalType).forEach((type) => {
         this._handlerIds.push(
           this._settings.connect(`changed::show-${type}`, () =>
-            this._updateVitalsVisibility()
-          )
+            this._updateVitalsVisibility(),
+          ),
         );
         this._handlerIds.push(
           this._settings.connect(`changed::${type}-update-interval`, () => {
             this._restartVitalTimer(type);
-          })
+          }),
         );
       });
     }
 
     private _updateContainerStyle(): void {
-      const bgColor = this._settings.get_string("background-color");
-      const borderColor = this._settings.get_string("border-color");
-      const borderRadius = this._settings.get_int("border-radius");
-      const spacing = this._settings.get_int("vital-spacing");
-      const padH = this._settings.get_int("padding-horizontal");
-      const padV = this._settings.get_int("padding-vertical");
+      const bgColor = this._settings.get_string('background-color');
+      const borderColor = this._settings.get_string('border-color');
+      const borderRadius = this._settings.get_int('border-radius');
+      const spacing = this._settings.get_int('vital-spacing');
+      const padH = this._settings.get_int('padding-horizontal');
+      const padV = this._settings.get_int('padding-vertical');
 
       this.set_style(`
             background-color: ${bgColor};
@@ -132,9 +137,9 @@ const VitalsWidget = GObject.registerClass(
     private _updatePosition(): void {
       const monitor = Main.layoutManager.primaryMonitor;
       if (!monitor) return;
-      const x = (monitor.width * this._settings.get_double("position-x")) / 100;
+      const x = (monitor.width * this._settings.get_double('position-x')) / 100;
       const y =
-        (monitor.height * this._settings.get_double("position-y")) / 100;
+        (monitor.height * this._settings.get_double('position-y')) / 100;
       this.set_position(Math.round(x), Math.round(y));
     }
 
