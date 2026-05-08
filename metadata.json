@@ -2,11 +2,11 @@
   "uuid": "vitalsWidget@ctrln3rd.github.com",
   "name": "vitals widget",
   "description": "Instantly monitor CPU usage, RAM, GPU performance, and temperatures right on your desktop.",
-  "shell-version": ["45", "46", "47", "48", "49"],
+  "shell-version": ["45", "46", "47", "48", "49", "50"],
   "url": "https://github.com/ctrln3rd/vitals-widget",
   "version": 3,
   "settings-schema": "org.gnome.shell.extensions.vitalswidget",
   "donations": {
-    "kofi": "ctrln3rd"
+    "kofi": "austinemk"
   }
 }

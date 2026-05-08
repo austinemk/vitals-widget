@@ -154,7 +154,7 @@ export default class VitalsWidgetPreferences extends ExtensionPreferences {
       'padding-horizontal',
       'Horizontal Padding',
       0,
-      100,
+      200,
     );
 
     this._addSpinRow(
