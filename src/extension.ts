@@ -150,30 +150,51 @@ const VitalsWidget = GObject.registerClass(
       });
     }
 
+    private _performSensorUpdate(type: VitalType): void {
+      const vital = this._vitals.get(type);
+      const sensor = this._sensors.get(type);
+
+      if (this._vitals.size > 0 && vital && vital.visible && sensor) {
+        sensor
+          .getValue()
+          .then((value: number) => {
+            vital.update(value);
+          })
+          .catch((err: any) => {
+            console.error(`[VitalsWidget] Error getting ${type} value:`, err);
+            vital.update(0);
+          });
+      }
+    }
+
+    private _startRecurringTimer(type: VitalType, interval: number): number {
+      const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, interval, () => {
+          const vital = this._vitals.get(type);
+          const sensor = this._sensors.get(type);
+
+          if (this._vitals.size > 0 && vital && vital.visible && sensor) {
+            this._performSensorUpdate(type);
+            return GLib.SOURCE_CONTINUE;
+          }
+          return GLib.SOURCE_REMOVE;
+        }
+      );
+      this._intervals.set(type, id);
+      return id;
+    }
+
     private _restartVitalTimer(type: VitalType): void {
       const oldId = this._intervals.get(type);
       if (oldId) GLib.source_remove(oldId);
 
       const interval = this._settings.get_int(`${type}-update-interval`);
-      const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, interval, () => {
-        const vital = this._vitals.get(type);
-        const sensor = this._sensors.get(type);
 
-        if (this._vitals.size > 0 && vital && vital.visible && sensor) {
-          sensor
-            .getValue()
-            .then((value: number) => {
-              vital.update(value);
-            })
-            .catch((err: any) => {
-              console.error(`[VitalsWidget] Error getting ${type} value:`, err);
-              vital.update(0);
-            });
-          return GLib.SOURCE_CONTINUE;
-        }
+      const initialDelay = 500;
+      GLib.timeout_add(GLib.PRIORITY_DEFAULT, initialDelay, () => {
+        this._performSensorUpdate(type);
+        this._startRecurringTimer(type, interval);
         return GLib.SOURCE_REMOVE;
       });
-      this._intervals.set(type, id);
     }
 
     private _clearTimers(): void {
