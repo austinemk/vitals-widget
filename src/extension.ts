@@ -140,7 +140,7 @@ const VitalsWidget = GObject.registerClass(
       const x = (monitor.width * this._settings.get_double('position-x')) / 100;
       const y =
         (monitor.height * this._settings.get_double('position-y')) / 100;
-      this.set_position(Math.round(x), Math.round(y));
+      this.set_position(monitor.x + Math.round(x), monitor.y + Math.round(y));
     }
 
     private _startUpdates(): void {
