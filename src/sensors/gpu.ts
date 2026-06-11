@@ -28,6 +28,7 @@ export class GPUSensor {
     // 1. Check for NVIDIA
     if (GLib.find_program_in_path('nvidia-smi')) {
       this._gpuType = 'nvidia';
+      this._gpuCount = 1;
       return;
     }
 
@@ -49,12 +50,15 @@ export class GPUSensor {
         ).query_exists(null)
       ) {
         this._gpuPaths.push(`${baseDir}/gt/gt0/rps_act_freq_mhz`);
-        this._gpuType = 'intel';
+
+        if (this._gpuType === 'none') {
+          this._gpuType = 'intel';
+        }
       }
     }
 
     if (this._gpuPaths.length > 0) {
-      this._gpuType = 'amd_sysfs';
+      //this._gpuType = 'amd_sysfs';
       this._gpuCount = this._gpuPaths.length;
       return;
     }
@@ -92,7 +96,7 @@ export class GPUSensor {
               .split('\n')
               .map((val) => parseInt(val)) || [];
           break;
-
+        case 'intel':
         case 'amd_sysfs':
           for (const path of this._gpuPaths) {
             const usage = await this._readSysfsUsage(path);
